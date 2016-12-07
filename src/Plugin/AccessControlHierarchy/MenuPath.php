@@ -147,27 +147,31 @@ class MenuPath extends AccessControlHierarchyBase {
    * {@inheritdoc}
    */
   public function getEntityValues(EntityInterface $entity, $field) {
-    $trail_service = \Drupal::service('menu.active_trail');
     $config = $this->config('workbench_access.settings');
     $menus = $config->get('parents');
+    $parent_ids = [];
 
     // loop through each menu and try to find a parent of the current page
     // currently the path -> id lookup only works for nodes... but that's OK
     // since workbench_access only filters those
     foreach ($menus as $menu) {
-      $link = $trail_service->getActiveTrailLink($menu);
+      $link = \Drupal::service('menu.active_trail')->getActiveTrailLink($menu);
       if ($link) {
         $link_params = $link->getUrlObject()->getRouteParameters();
         if (isset($link_params['node'])) {
-          if ($link_params['node'] == $entity->id()) {
-            // there's probably a better way to get the UUID
-            $id = 'menu_link_content:' . $link->getDerivativeId();
-            return [$id];
-          }
+          // there's probably a better way to get the UUID
+          $parent_ids[] = 'menu_link_content:' . $link->getDerivativeId();
         }
       }
     }
-    return [];
+
+    if (count($parent_ids)) {
+      return $parent_ids;
+    }
+
+    // this is a probably a hack to account for how the manager's checkAccess works
+    // needs to return something and not be empty, but meaningless to deny access
+    return [0];
   }
 
   /**
