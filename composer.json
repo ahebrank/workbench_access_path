@@ -1,0 +1,5 @@
+{
+   "name": "ahebrank/workbench_access_path",
+   "type": "drupal-module",
+   "description": "Workbench Access plugin using menus + path trail to determine access."
+}
