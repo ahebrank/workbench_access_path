@@ -78,12 +78,14 @@ class CurrentFrontendPathHelper extends CurrentPathHelper implements PathHelperI
     $router = \Drupal::service('router.no_access_checks');
     $router_info = $router->match($pathinfo);
 
-    $route = $router_info['_route'];
+    if (isset($router_info['_route'])) {
+      $route = $router_info['_route'];
 
-    // node edit form
-    if ($route == 'entity.node.edit_form') {
-      $nid = $router_info['node']->id();
-      $pathinfo = Url::fromRoute('entity.node.canonical', ['node' => $nid])->toString();
+      // node edit form
+      if ($route == 'entity.node.edit_form') {
+        $nid = $router_info['node']->id();
+        $pathinfo = Url::fromRoute('entity.node.canonical', ['node' => $nid])->toString();
+      }
     }
 
     return $pathinfo;
