@@ -1,0 +1,9 @@
+name: Workbench Access Path
+type: module
+description: Hierarchical access control with paths.
+core: 8.x
+package: Workbench
+
+dependencies:
+  - workbench_access
+  - menu_trail_by_path
