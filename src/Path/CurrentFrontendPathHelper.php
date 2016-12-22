@@ -25,6 +25,21 @@ class CurrentFrontendPathHelper extends CurrentPathHelper implements PathHelperI
     $this->context    = $context;
   }
 
+  /**
+   * Create a Url Object from a relative uri (e.g. /news/drupal8-release-party)
+   *
+   * @param $relativeUri
+   * @return Url
+   */
+  protected function createUrlFromRelativeUri($relativeUri) {
+    // @see https://www.drupal.org/node/2810961
+    if (UrlHelper::isExternal(substr($relativeUri, 1))) {
+      return Url::fromUri('base:' . $relativeUri);
+    }
+
+    return Url::fromUserInput($relativeUri);
+  }
+
 
   /**
    * Returns the frontend version of the current request Url
@@ -35,7 +50,7 @@ class CurrentFrontendPathHelper extends CurrentPathHelper implements PathHelperI
    * @return \Drupal\Core\Url|null
    */
   protected function getCurrentRequestUrl() {
-    $current_pathinfo_url = Url::fromUserInput($this->getContextPath());
+    $current_pathinfo_url = $this->createUrlFromRelativeUri($this->getContextPath());
     if ($current_pathinfo_url->isRouted()) {
       return $current_pathinfo_url;
     }
@@ -58,7 +73,7 @@ class CurrentFrontendPathHelper extends CurrentPathHelper implements PathHelperI
 
     while (count($path_elements) > 1) {
       array_pop($path_elements);
-      $url = Url::fromUserInput('/' . implode('/', $path_elements));
+      $url = $this->createUrlFromRelativeUri('/' . implode('/', $path_elements));
       if ($url->isRouted()) {
         $urls[] = $url;
       }
